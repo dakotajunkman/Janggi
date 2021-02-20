@@ -52,7 +52,7 @@ class Board:
             '1': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9,
             'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8
         }
-    
+
     def convert_coords(self, coord: str):
         """
         Converts Janggi algebraic notation in to coordinates.
@@ -106,6 +106,12 @@ class Board:
         """
         self._board_spaces[piece.get_location()] = piece
 
+    def remove_piece(self, coord: tuple) -> None:
+        """
+        Removes piece at the current location. Used when a piece is captured.
+        """
+        self._board_spaces[coord] = None
+
     def get_piece(self, coord: str):
         """
         Returns the piece residing at the passed in location.
@@ -123,8 +129,7 @@ class MasterPiece:
     """
     def __init__(self, color: str, name: str, location: tuple):
         """
-        Initializes the piece. Sets the color and initial location on the board. Calls the board move
-        piece method to set the piece on the board.
+        Initializes the piece color, name, and location. 
         """
         self._color = color
         self._name = name
@@ -148,6 +153,69 @@ class MasterPiece:
         """
         self._location = coord
 
+    def valid_move(self, next_loc: tuple):
+        """
+        Returns whether or not the piece can move from the current location to the next location. Only
+        handles whether the space can be moved to by movement rules of the piece. Does not handle 
+        whether the space is occupied, etc. Guard and general will inherit this method.
+        param next_loc: space to move to
+        return: True if space is within reach, else False
+        """
+        cur_loc = self._location
+
+        # handle blue moves
+        if self._color == 'blue':
+
+            # cannot move out of the palace
+            if (next_loc[0] < 7 or next_loc[0] > 9) or (next_loc[1] < 3 or next_loc[1] > 5):
+                return False
+            
+            # handle vertical and horizontal moves
+            if abs(next_loc[0] - cur_loc[0]) == 1 and next_loc[1] == cur_loc[1]:
+                return True
+            if abs(next_loc[1] - cur_loc[1]) == 1 and next_loc[0] == cur_loc[0]:
+                return True
+            
+            # handle diagonal moves
+            if (cur_loc == (9, 3) and next_loc == (8, 4)) or (cur_loc == (8, 4) and next_loc == (9, 3)):
+                return True
+            
+            if (cur_loc == (9, 5) and next_loc == (8, 4)) or (cur_loc == (8, 4) and next_loc == (9, 5)):
+                return True
+            
+            if (cur_loc == (7, 3) and next_loc == (8, 4)) or (cur_loc == (8, 4) and next_loc == (7, 3)):
+                return True
+            
+            if (cur_loc == (7, 5) and next_loc == (8, 4)) or (cur_loc == (8, 4) and next_loc == (7, 5)):
+                return True
+            return False
+        
+        # handle red moves
+        else:
+            # cannot move out of the palace
+            if (next_loc[0] > 2 or next_loc[0] < 0) or (next_loc[1] < 3 or next_loc[1] > 5):
+                return False
+            
+            # handle vertical and horizontal moves
+            if abs(next_loc[0] - cur_loc[0]) == 1 and next_loc[1] == cur_loc[1]:
+                return True
+            if abs(next_loc[1] - cur_loc[1]) == 1 and next_loc[0] == cur_loc[0]:
+                return True
+
+            # handle diagonal moves
+            if (cur_loc == (0, 3) and next_loc == (1, 4)) or (cur_loc == (1, 4) and next_loc == (0, 3)):
+                return True
+            
+            if (cur_loc == (0, 5) and next_loc == (1, 4)) or (cur_loc == (1, 4) and next_loc == (0, 5)):
+                return True
+            
+            if (cur_loc == (2, 3) and next_loc == (1, 4)) or (cur_loc == (1, 4) and next_loc == (2, 3)):
+                return True
+            
+            if (cur_loc == (2, 5) and next_loc == (1, 4)) or (cur_loc == (1, 4) and next_loc == (2, 5)):
+                return True
+            return False
+
 
 class Soldier(MasterPiece):
     """
@@ -155,11 +223,59 @@ class Soldier(MasterPiece):
     """
     def __init__(self, color: str, name: str, location: tuple):
         """
-        Uses MasterPiece init method to initialize the piece.
+        Uses MasterPiece init method to initialize the piece. Adds an in_palace data member to keep
+        track of whether the piece is in the enemy palace.
         """
         super().__init__(color, name, location)
-    
+        self._in_palace = False
 
+    def valid_move(self, next_loc: tuple) -> bool:
+        """
+        Returns whether or not the piece can move from the current location to the next location. Only
+        handles whether the space can be moved to by movement rules of the piece. Does not handle 
+        whether the space is occupied, etc.
+        param next_loc: space to move to
+        return: True if space is within reach, else False
+        """
+        cur_loc = self._location
+
+        # handle off board spaces
+        if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
+            return False
+        
+        # handle blue piece moves
+        if self._color == 'blue':
+
+            # one space forward is valid
+            if cur_loc[0] - next_loc[0] == 1 and next_loc[1] == cur_loc[1]:
+                return True
+            
+            # one space sideways is valid
+            elif abs(next_loc[1] - cur_loc[1]) == 1 and next_loc[0] == cur_loc[0]:
+                return True
+            
+            # handle palace movement rules
+            elif self._in_palace:
+                if next_loc == (1, 4) and (cur_loc == (2, 3) or cur_loc == (2, 5)):
+                    return True
+                elif cur_loc == (1, 4) and (next_loc == (0, 3) or next_loc == (0, 5)):
+                    return True
+            return False
+        
+        # handle red pieces
+        else:
+            if next_loc[0] - cur_loc[0] == 1 and next_loc[1] == cur_loc[1]:
+                return True
+            elif abs(next_loc[1] - cur_loc[1]) == 1 and next_loc[0] == cur_loc[0]:
+                return True
+            
+            elif self._in_palace:
+                if next_loc == (8, 4) and (cur_loc == (7, 3) or cur_loc == (7, 5)):
+                    return True
+                elif cur_loc == (8, 4) and (next_loc == (9, 3) or next_loc == (9, 5)):
+                    return True
+            return False
+             
 class Cannon(MasterPiece):
     """
     Represents a cannon piece. Inherits from MasterPiece.
@@ -308,3 +424,13 @@ class JanggiGame:
         self._board.set_piece(self._bS4)
         self._bS5 = Soldier('blue', 'bS5', (6, 8))
         self._board.set_piece(self._bS5)
+
+        # state of game and player turn initializations
+        self._player_turn = 'blue'
+        self._game_state = 'UNFINISHED'
+    
+    def get_game_state(self) -> str:
+        """
+        Returns the current state of the game.
+        """
+        return self._game_state
