@@ -137,3 +137,80 @@ class MasterPiece:
         Updates the piece's location.
         """
         self._location = coord
+
+
+class Soldier(MasterPiece):
+    """
+    Represents a soldier piece. Inherits from MasterPiece.
+    """
+    def __init__(self, color: str, name: str, location: tuple):
+        """
+        Uses MasterPiece init method to initialize the piece.
+        """
+        super().__init__(color, name, location)
+    
+
+class Cannon(MasterPiece):
+    """
+    Represents a cannon piece. Inherits from MasterPiece.
+    """
+    def __init__(self, color: str, name: str, location: tuple):
+        """
+        Uses MasterPiece method to initialize the piece.
+        """
+        super().__init(color, name, location)
+
+
+class Chariot(MasterPiece):
+    """
+    Represents a chariot piece. Inherits from MasterPiece.
+    """
+    def __init__(self, color: str, name: str, location: tuple):
+        """
+        Uses MasterPiece method to initialize the piece.
+        """
+        super().__init(color, name, location)
+
+
+class Elephant(MasterPiece):
+    """
+    Represents an elephant piece. Inherits from MasterPiece.
+    """
+    def __init__(self, color: str, name: str, location: tuple):
+        """
+        Uses MasterPiece method to initialize the piece.
+        """
+        super().__init(color, name, location)
+
+
+class Horse(MasterPiece):
+    """
+    Represents a horse piece. Inherits from MasterPiece.
+    """
+    def __init__(self, color: str, name: str, location: tuple):
+        """
+        Uses MasterPiece method to initialize the piece.
+        """
+        super().__init(color, name, location)
+
+
+class Guard(MasterPiece):
+    """
+    Represents a guard piece. Inherits from MasterPiece.
+    """
+    def __init__(self, color: str, name: str, location: tuple):
+        """
+        Uses MasterPiece method to initialize the piece.
+        """
+        super().__init(color, name, location)
+
+
+class General(MasterPiece):
+    """
+    Represents a general piece. Inherits from MasterPiece.
+    """
+    def __init__(self, color: str, name: str, location: tuple):
+        """
+        Uses MasterPiece method to initialize the piece.
+        """
+        super().__init(color, name, location)
