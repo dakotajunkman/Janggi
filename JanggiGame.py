@@ -86,7 +86,7 @@ class Board:
         board in their corresponding position. Used for debugging only.
         """
         for coord in self._board_spaces:
-            if self._board_spaces is not None:
+            if self._board_spaces[coord] is not None:
                 self._visual_board[coord[0]][coord[1]] = self._board_spaces[coord].get_name()
     
     def move_piece(self, piece) -> None:
@@ -96,7 +96,14 @@ class Board:
         """
         for coord in self._board_spaces:
             if self._board_spaces[coord] == piece:
-                self._board_spaces = None
+                self._board_spaces[coord] = None
+        self._board_spaces[piece.get_location()] = piece
+    
+    def set_piece(self, piece) -> None:
+        """
+        Sets the piece on the board. Will be used upon game initialization.
+        param piece: piece object
+        """
         self._board_spaces[piece.get_location()] = piece
 
 
@@ -104,4 +111,29 @@ class MasterPiece:
     """
     Holds data common to all pieces of the game. Individual pieces will inherit from this class.
     """
-    pass
+    def __init__(self, color: str, name: str, location: tuple):
+        """
+        Initializes the piece. Sets the color and initial location on the board. Calls the board move
+        piece method to set the piece on the board.
+        """
+        self._color = color
+        self._name = name
+        self._location = location
+    
+    def get_name(self) -> str:
+        """
+        Getter method for accessing piece name.
+        """
+        return self._name
+
+    def get_location(self) -> tuple:
+        """
+        Getter method for accessing the piece's location.
+        """
+        return self._location
+    
+    def set_location(self, coord: tuple) -> None:
+        """
+        Updates the piece's location.
+        """
+        self._location = coord
