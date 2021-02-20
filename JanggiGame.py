@@ -14,16 +14,16 @@ class Board:
         Initializes the board and necessary data members.
         """
         self._visual_board = [
-            ['', '', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', '', '']
+            ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+            ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+            ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+            ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+            ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+            ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+            ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+            ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+            ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+            ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
         ]
         self._board_spaces = {
             (0, 0): None, (0, 1): None, (0, 2): None, (0, 3): None, (0, 4): None,
@@ -106,6 +106,16 @@ class Board:
         """
         self._board_spaces[piece.get_location()] = piece
 
+    def get_piece(self, coord: str):
+        """
+        Returns the piece residing at the passed in location.
+        param coord: location to check
+        return: piece at the location if it is occupied, else None
+        """
+        # check that given coordinate is a valid board location
+        # when coord is valid, check that space is occupied
+        if self.convert_coords(coord) and self._board_spaces[self.convert_coords(coord)] is not None:
+            return self._board_spaces[self.convert_coords(coord)]
 
 class MasterPiece:
     """
@@ -158,7 +168,7 @@ class Cannon(MasterPiece):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init(color, name, location)
+        super().__init__(color, name, location)
 
 
 class Chariot(MasterPiece):
@@ -169,7 +179,7 @@ class Chariot(MasterPiece):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init(color, name, location)
+        super().__init__(color, name, location)
 
 
 class Elephant(MasterPiece):
@@ -180,7 +190,7 @@ class Elephant(MasterPiece):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init(color, name, location)
+        super().__init__(color, name, location)
 
 
 class Horse(MasterPiece):
@@ -191,7 +201,7 @@ class Horse(MasterPiece):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init(color, name, location)
+        super().__init__(color, name, location)
 
 
 class Guard(MasterPiece):
@@ -202,7 +212,7 @@ class Guard(MasterPiece):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init(color, name, location)
+        super().__init__(color, name, location)
 
 
 class General(MasterPiece):
@@ -213,4 +223,88 @@ class General(MasterPiece):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init(color, name, location)
+        super().__init__(color, name, location)
+
+
+class JanggiGame:
+    """
+    Represents the actual game. Game state is updated and moves are made using the piece and board
+    objects.
+    """
+    def __init__(self):
+        """
+        Initializes the board and pieces and places pieces on the board. Sets up the current state of
+        the game and whose turn it is to move.
+        """
+        # initialize the playing board
+        self._board = Board()
+
+        # initialize the red pieces and place them on the board
+        # chariots will be denoted by R, for their western chess counterpart Rook
+        self._rR1 = Chariot('red', 'rR1', (0, 0))
+        self._board.set_piece(self._rR1)
+        self._rE1 = Elephant('red', 'rE1', (0, 1))
+        self._board.set_piece(self._rE1)
+        self._rH1 = Horse('red', 'rH1', (0, 2))
+        self._board.set_piece(self._rH1)
+        # guards will be denoted by A, for their xiangqi counterpart Advisor
+        self._rA1 = Guard('red', 'rA1', (0, 3))
+        self._board.set_piece(self._rA1)
+        self._rA2 = Guard('red', 'rA2', (0, 5))
+        self._board.set_piece(self._rA2)
+        self._rE2 = Elephant('red', 'rE2', (0, 6))
+        self._board.set_piece(self._rE2)
+        self._rH2 = Horse('red', 'rH2', (0, 7))
+        self._board.set_piece(self._rH2)
+        self._rR2 = Chariot('red', 'rR2', (0, 8))
+        self._board.set_piece(self._rR2)
+        self._rG1 = General('red', 'rG1', (1, 4))
+        self._board.set_piece(self._rG1)
+        self._rC1 = Cannon('red', 'rC1', (2, 1))
+        self._board.set_piece(self._rC1)
+        self._rC2 = Cannon('red', 'rC2', (2, 7))
+        self._board.set_piece(self._rC2)
+        self._rS1 = Soldier('red', 'rS1', (3, 0))
+        self._board.set_piece(self._rS1)
+        self._rS2 = Soldier('red', 'rS2', (3, 2))
+        self._board.set_piece(self._rS2)
+        self._rS3 = Soldier('red', 'rS3', (3, 4))
+        self._board.set_piece(self._rS3)
+        self._rS4 = Soldier('red', 'rS4', (3, 6))
+        self._board.set_piece(self._rS4)
+        self._rS5 = Soldier('red', 'rS5', (3, 8))
+        self._board.set_piece(self._rS5)
+
+        # initialize blue pieces and place on the board
+        self._bR1 = Chariot('blue', 'bR1', (9, 0))
+        self._board.set_piece(self._bR1)
+        self._bE1 = Elephant('blue', 'bE1', (9, 1))
+        self._board.set_piece(self._bE1)
+        self._bH1 = Horse('blue', 'bH1', (9, 2))
+        self._board.set_piece(self._bH1)
+        self._bA1 = Guard('blue', 'bA1', (9, 3))
+        self._board.set_piece(self._bA1)
+        self._bA2 = Guard('blue', 'bA2', (9, 5))
+        self._board.set_piece(self._bA2)
+        self._bE2 = Elephant('blue', 'bE2', (9, 6))
+        self._board.set_piece(self._bE2)
+        self._bH2 = Horse('blue', 'bH2', (9, 7))
+        self._board.set_piece(self._bH2)
+        self._bR2 = Chariot('blue', 'bR2', (9, 8))
+        self._board.set_piece(self._bR2)
+        self._bG1 = General('blue', 'bG1', (8, 4))
+        self._board.set_piece(self._bG1)
+        self._bC1 = Cannon('blue', 'bC1', (7, 1))
+        self._board.set_piece(self._bC1)
+        self._bC2 = Cannon('blue', 'bC2', (7, 7))
+        self._board.set_piece(self._bC2)
+        self._bS1 = Soldier('blue', 'bS1', (6, 0))
+        self._board.set_piece(self._bS1)
+        self._bS2 = Soldier('blue', 'bS2', (6, 2))
+        self._board.set_piece(self._bS2)
+        self._bS3 = Soldier('blue', 'bS3', (6, 4))
+        self._board.set_piece(self._bS3)
+        self._bS4 = Soldier('blue', 'bS4', (6, 6))
+        self._board.set_piece(self._bS4)
+        self._bS5 = Soldier('blue', 'bS5', (6, 8))
+        self._board.set_piece(self._bS5)
