@@ -285,6 +285,33 @@ class Cannon(MasterPiece):
         Uses MasterPiece method to initialize the piece.
         """
         super().__init__(color, name, location)
+   
+    def valid_move(self, next_loc: tuple) -> bool:
+        """
+        Returns whether or not the piece can move from the current location to the next location. Only
+        handles whether the space can be moved to by movement rules of the piece. Does not handle 
+        whether the space is occupied, etc.
+        param next_loc: space to move to
+        return: True if space is within reach, else False
+        """     
+        # handle off board spaces
+        if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
+            return False
+
+        cur_loc = self._location
+
+        # any strictly horizontal or vertical moves are legal
+        if (cur_loc[0] - next_loc[0] == 0 and abs(cur_loc[1] - next_loc[1]) > 1) \
+        or (cur_loc[1] - next_loc[1] == 0 and abs(cur_loc[0] - next_loc[0]) > 1):
+            return True
+
+        blue_palace_x = [(7, 3), (7, 5), (9, 3), (9, 5)]
+        red_palace_x = [(0, 3), (0, 5), (2, 3), (2, 5)]
+        
+        if (cur_loc in blue_palace_x and next_loc in blue_palace_x) or (cur_loc in red_palace_x \
+        and next_loc in red_palace_x):
+            return True
+        return False
 
 
 class Chariot(MasterPiece):
@@ -310,18 +337,20 @@ class Chariot(MasterPiece):
             return False
 
         cur_loc = self._location
-        blue_palace_x = [(7, 3), (7, 5), (8, 4), (9, 3), (9, 5)]
-        red_palace_x = [(0, 3), (0, 5), (1, 4), (2, 3), (2, 5)]
 
         # any strictly horizontal or vertical moves are legal
         if cur_loc[0] - next_loc[0] == 0 or cur_loc[1] - next_loc[1] == 0:
             return True
+
+        blue_palace_x = [(7, 3), (7, 5), (8, 4), (9, 3), (9, 5)]
+        red_palace_x = [(0, 3), (0, 5), (1, 4), (2, 3), (2, 5)]
         
-        elif (cur_loc in blue_palace_x and next_loc in blue_palace_x) or (cur_loc in red_palace_x \
+        if (cur_loc in blue_palace_x and next_loc in blue_palace_x) or (cur_loc in red_palace_x \
         and next_loc in red_palace_x):
             return True
         return False
-            
+
+
 class Elephant(MasterPiece):
     """
     Represents an elephant piece. Inherits from MasterPiece.
@@ -331,6 +360,29 @@ class Elephant(MasterPiece):
         Uses MasterPiece method to initialize the piece.
         """
         super().__init__(color, name, location)
+    
+    def valid_move(self, next_loc: tuple) -> bool:
+        """
+        Returns whether or not the piece can move from the current location to the next location. Only
+        handles whether the space can be moved to by movement rules of the piece. Does not handle 
+        whether the space is occupied, etc.
+        param next_loc: space to move to
+        return: True if space is within reach, else False
+        """   
+        # handle off board spaces
+        if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
+            return False
+
+        cur_loc = self._location
+
+        # horizontal move, then diagonal
+        if abs(next_loc[0] - cur_loc[0]) == 2 and abs(next_loc[1] - cur_loc[1]) == 3:
+            return True
+
+        # vertical move, then diagonal
+        elif abs(next_loc[0] - cur_loc[0]) == 3 and abs(next_loc[1] - cur_loc[1]) == 2:
+            return True
+        return False
 
 
 class Horse(MasterPiece):
@@ -342,6 +394,29 @@ class Horse(MasterPiece):
         Uses MasterPiece method to initialize the piece.
         """
         super().__init__(color, name, location)
+    
+    def valid_move(self, next_loc: tuple) -> bool:
+        """
+        Returns whether or not the piece can move from the current location to the next location. Only
+        handles whether the space can be moved to by movement rules of the piece. Does not handle 
+        whether the space is occupied, etc.
+        param next_loc: space to move to
+        return: True if space is within reach, else False
+        """   
+        # handle off board spaces
+        if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
+            return False
+
+        cur_loc = self._location
+
+        # horizontal move, then diagonal
+        if abs(next_loc[0] - cur_loc[0]) == 1 and abs(next_loc[1] - cur_loc[1]) == 2:
+            return True
+
+        # vertical move, then diagonal
+        elif abs(next_loc[0] - cur_loc[0]) == 2 and abs(next_loc[1] - cur_loc[1]) == 1:
+            return True
+        return False
 
 
 class Guard(MasterPiece):
