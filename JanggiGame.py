@@ -123,6 +123,7 @@ class Board:
         if self.convert_coords(coord) and self._board_spaces[self.convert_coords(coord)] is not None:
             return self._board_spaces[self.convert_coords(coord)]
 
+
 class MasterPiece:
     """
     Holds data common to all pieces of the game. Individual pieces will inherit from this class.
@@ -227,7 +228,6 @@ class Soldier(MasterPiece):
         track of whether the piece is in the enemy palace.
         """
         super().__init__(color, name, location)
-        self._in_palace = False
 
     def valid_move(self, next_loc: tuple) -> bool:
         """
@@ -255,11 +255,10 @@ class Soldier(MasterPiece):
                 return True
             
             # handle palace movement rules
-            elif self._in_palace:
-                if next_loc == (1, 4) and (cur_loc == (2, 3) or cur_loc == (2, 5)):
-                    return True
-                elif cur_loc == (1, 4) and (next_loc == (0, 3) or next_loc == (0, 5)):
-                    return True
+            elif next_loc == (1, 4) and (cur_loc == (2, 3) or cur_loc == (2, 5)):
+                return True
+            elif cur_loc == (1, 4) and (next_loc == (0, 3) or next_loc == (0, 5)):
+                return True
             return False
         
         # handle red pieces
@@ -269,13 +268,14 @@ class Soldier(MasterPiece):
             elif abs(next_loc[1] - cur_loc[1]) == 1 and next_loc[0] == cur_loc[0]:
                 return True
             
-            elif self._in_palace:
-                if next_loc == (8, 4) and (cur_loc == (7, 3) or cur_loc == (7, 5)):
-                    return True
-                elif cur_loc == (8, 4) and (next_loc == (9, 3) or next_loc == (9, 5)):
-                    return True
+            # palace movements
+            elif next_loc == (8, 4) and (cur_loc == (7, 3) or cur_loc == (7, 5)):
+                return True
+            elif cur_loc == (8, 4) and (next_loc == (9, 3) or next_loc == (9, 5)):
+                return True
             return False
-             
+
+           
 class Cannon(MasterPiece):
     """
     Represents a cannon piece. Inherits from MasterPiece.
@@ -297,7 +297,31 @@ class Chariot(MasterPiece):
         """
         super().__init__(color, name, location)
 
+    def valid_move(self, next_loc: tuple) -> bool:
+        """
+        Returns whether or not the piece can move from the current location to the next location. Only
+        handles whether the space can be moved to by movement rules of the piece. Does not handle 
+        whether the space is occupied, etc.
+        param next_loc: space to move to
+        return: True if space is within reach, else False
+        """     
+        # handle off board spaces
+        if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
+            return False
 
+        cur_loc = self._location
+        blue_palace_x = [(7, 3), (7, 5), (8, 4), (9, 3), (9, 5)]
+        red_palace_x = [(0, 3), (0, 5), (1, 4), (2, 3), (2, 5)]
+
+        # any strictly horizontal or vertical moves are legal
+        if cur_loc[0] - next_loc[0] == 0 or cur_loc[1] - next_loc[1] == 0:
+            return True
+        
+        elif (cur_loc in blue_palace_x and next_loc in blue_palace_x) or (cur_loc in red_palace_x \
+        and next_loc in red_palace_x):
+            return True
+        return False
+            
 class Elephant(MasterPiece):
     """
     Represents an elephant piece. Inherits from MasterPiece.
