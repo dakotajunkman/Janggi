@@ -112,7 +112,7 @@ class Board:
         """
         self._board_spaces[coord] = None
 
-    def get_piece(self, coord: str):
+    def get_piece(self, coord: tuple):
         """
         Returns the piece residing at the passed in location.
         param coord: location to check
@@ -120,8 +120,8 @@ class Board:
         """
         # check that given coordinate is a valid board location
         # when coord is valid, check that space is occupied
-        if self.convert_coords(coord) and self._board_spaces[self.convert_coords(coord)] is not None:
-            return self._board_spaces[self.convert_coords(coord)]
+        if self._board_spaces[coord] is not None:
+            return self._board_spaces[coord]
 
 
 class MasterPiece:
@@ -153,6 +153,12 @@ class MasterPiece:
         Updates the piece's location.
         """
         self._location = coord
+
+    def get_color(self):
+        """
+        Getter method for accessing the piece's color.
+        """
+        return self._color
 
     def valid_move(self, next_loc: tuple):
         """
@@ -216,6 +222,20 @@ class MasterPiece:
             if (cur_loc == (2, 5) and next_loc == (1, 4)) or (cur_loc == (1, 4) and next_loc == (2, 5)):
                 return True
             return False
+
+    def is_blocked(self, next_loc: tuple, board) -> bool:
+        """
+        Determines whether a piece is blocked from moving to it's desired location. Guard and General
+        will inherit this method. Does not take in to account if the space is a valid move for the
+        piece.
+        param next_loc: desired move-to location of the piece
+        param board: the current game board
+        return: True if piece is blocked, else False
+        """
+        # for general and guards, if space is occupied by same color piece it is blocked
+        if board.get_piece(next_loc) is not None and board.get_piece(next_loc).get_color() == self._color:
+            return True
+        return False
 
 
 class Soldier(MasterPiece):
