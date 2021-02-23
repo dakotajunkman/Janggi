@@ -331,6 +331,85 @@ class Cannon(MasterPiece):
         and next_loc in red_palace_x):
             return True
         return False
+    
+    def is_blocked(self, next_loc: tuple, board) -> bool:
+        """
+        Determines whether a piece is blocked from moving to it's desired location. Soldier, guard 
+        and general will inherit this method. Does not take in to account if the space is a valid move 
+        for the piece.
+        param next_loc: desired move-to location of the piece
+        param board: the current game board
+        return: True if piece is blocked, else False
+        """
+        if board.get_piece(next_loc) is not None and board.get_piece(next_loc).get_color() == self._color:
+            return True
+        
+        # cannot capture another cannon
+        elif board.get_piece(next_loc) is not None and board.get_piece(next_loc).get_type() == 'cannon':
+            return True
+
+        cur_loc = self._location
+
+        # set up counter to count pieces between spaces
+        counter = 0
+
+        # loop through each space and check for occupation
+        # if occupied by a cannon we can stop, the piece is blocked
+        # otherwise increment the counter
+        # when counter is 1 piece can be moved, otherwise False
+        # check horizontal movements
+        if cur_loc[0] == next_loc[0]:
+                # increment or decrement value and check each space for occupation
+            if cur_loc[1] < next_loc[1]:
+                cur_loc = (cur_loc[0], cur_loc[1] + 1)
+            else:
+                cur_loc = (cur_loc[0], cur_loc[1] - 1)
+            while cur_loc[1] != next_loc[1]:
+                if board.get_piece(cur_loc) is not None and board.get_piece(cur_loc).get_type() == 'cannon':
+                    return True
+                elif board.get_piece(cur_loc) is not None:
+                    counter += 1
+                if cur_loc[1] < next_loc[1]:
+                    cur_loc = (cur_loc[0], cur_loc[1] + 1)
+                else:
+                    cur_loc = (cur_loc[0], cur_loc[1] - 1)
+            if counter == 1:
+                return False
+            return True
+
+        # check vertical movements
+        if cur_loc[1] == next_loc[1]:
+                # increment or decrement value and check each space for occupation
+            if cur_loc[0] < next_loc[0]:
+                cur_loc = (cur_loc[0] + 1, cur_loc[1])
+            else:
+                cur_loc = (cur_loc[0] - 1, cur_loc[1])
+            while cur_loc[0] != next_loc[0]:
+                if board.get_piece(cur_loc) is not None and board.get_piece(cur_loc).get_type() == 'cannon':
+                    return True
+                elif board.get_piece(cur_loc) is not None:
+                    counter += 1
+                if cur_loc[0] < next_loc[0]:
+                    cur_loc = (cur_loc[0] + 1, cur_loc[1])
+                else:
+                    cur_loc = (cur_loc[0] - 1, cur_loc[1])   
+            if counter == 1:
+                return False   
+            return True
+
+        blue_palace_x = [(7, 3), (7, 5), (9, 3), (9, 5)]
+        red_palace_x = [(0, 3), (0, 5), (2, 3), (2, 5)]
+
+        # handle traversing the palace diagonals
+        # can jump over occupied center space so long as it isn't occupied by cannon
+        if cur_loc in red_palace_x and next_loc in red_palace_x and board.get_piece((1, 4)) is not None \
+        and board.get_piece((1, 4)).get_type() != 'cannon':
+            return False
+            
+        if cur_loc in blue_palace_x and next_loc in blue_palace_x and board.get_piece((8, 4)) is not None \
+        and board.get_piece((8, 4)).get_type() != 'cannon':
+            return False
+        return True       
 
 
 class Chariot(MasterPiece):
