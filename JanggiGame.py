@@ -53,6 +53,12 @@ class Board:
             'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8
         }
 
+    def get_board(self) -> None:
+        """
+        Getter method for accessing board dict.
+        """
+        return self._board_spaces
+
     def convert_coords(self, coord: str):
         """
         Converts Janggi algebraic notation in to coordinates.
@@ -119,6 +125,7 @@ class Board:
 class MasterPiece:
     """
     Holds data common to all pieces of the game. Individual pieces will inherit from this class.
+    Named after my code for this assignment.
     """
     def __init__(self, color: str, name: str, type: str, location: tuple):
         """
@@ -128,6 +135,7 @@ class MasterPiece:
         self._name = name
         self._type = type
         self._location = location
+        self._valid_moves = set()
     
     def get_name(self) -> str:
         """
@@ -158,6 +166,30 @@ class MasterPiece:
         Sets the piece's location.
         """
         self._location = location
+    
+    def add_move(self, coord: tuple) -> None:
+        """
+        Adds destination coord to the piece's valid moves.
+        """
+        self._valid_moves.add(coord)
+    
+    def clear_moves(self) -> None:
+        """
+        Clears the piece's list of valid moves.
+        """
+        self._valid_moves.clear()
+    
+    def set_valid_moves(self, board) -> None:
+        """
+        Loops through each space on the board and checks if it is a valid destination for the piece.
+        Adds all valid destinations to the piece's valid moves set. Set is wiped clean before looping.
+        """
+        # clear set before adding spaces
+        self.clear_moves()
+
+        for space in board.get_board():
+            if self.valid_move(space) and not self.is_blocked(space, board):
+                self.add_move(space)
 
     def valid_move(self, next_loc: tuple):
         """
@@ -379,7 +411,7 @@ class Cannon(MasterPiece):
 
         # check vertical movements
         if cur_loc[1] == next_loc[1]:
-                # increment or decrement value and check each space for occupation
+            # increment or decrement value and check each space for occupation
             if cur_loc[0] < next_loc[0]:
                 cur_loc = (cur_loc[0] + 1, cur_loc[1])
             else:
@@ -709,9 +741,19 @@ class JanggiGame:
         # state of game and player turn initializations
         self._player_turn = 'blue'
         self._game_state = 'UNFINISHED'
+
+        # set initial valid moves
+        self.update_valid_moves()
     
     def get_game_state(self) -> str:
         """
         Returns the current state of the game.
         """
         return self._game_state
+    
+    def update_valid_moves(self) -> None:
+        """
+        Updates the valid moves for each piece on the board.
+        """
+        for piece in self._pieces:
+            piece.set_valid_moves(self._board)
