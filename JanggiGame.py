@@ -85,19 +85,11 @@ class Board:
         Iterates over dictionary of board spaces and places pieces on the visual
         board in their corresponding position. Used for debugging only.
         """
+        # clear board before updating
+        self._visual_board = [['   ' for _ in range(9)] for _ in range(10)]
         for coord in self._board_spaces:
             if self._board_spaces[coord] is not None:
                 self._visual_board[coord[0]][coord[1]] = self._board_spaces[coord].get_name()
-    
-    def move_piece(self, piece) -> None:
-        """
-        Finds piece on the board and moves it to its new location.
-        param piece: piece object
-        """
-        for coord in self._board_spaces:
-            if self._board_spaces[coord] == piece:
-                self._board_spaces[coord] = None
-        self._board_spaces[piece.get_location()] = piece
     
     def set_piece(self, piece) -> None:
         """
@@ -128,12 +120,13 @@ class MasterPiece:
     """
     Holds data common to all pieces of the game. Individual pieces will inherit from this class.
     """
-    def __init__(self, color: str, name: str, location: tuple):
+    def __init__(self, color: str, name: str, type: str, location: tuple):
         """
         Initializes the piece color, name, and location. 
         """
         self._color = color
         self._name = name
+        self._type = type
         self._location = location
     
     def get_name(self) -> str:
@@ -142,23 +135,29 @@ class MasterPiece:
         """
         return self._name
 
-    def get_location(self) -> tuple:
-        """
-        Getter method for accessing the piece's location.
-        """
-        return self._location
-    
-    def set_location(self, coord: tuple) -> None:
-        """
-        Updates the piece's location.
-        """
-        self._location = coord
-
-    def get_color(self):
+    def get_color(self) -> str:
         """
         Getter method for accessing the piece's color.
         """
         return self._color
+
+    def get_type(self) -> str:
+        """
+        Getter method for accessing piece type.
+        """
+        return self._type
+
+    def get_location(self) -> tuple:
+        """
+        Getter method for accessing a piece's location.
+        """
+        return self._location
+
+    def set_location(self, location: tuple) -> None:
+        """
+        Sets the piece's location.
+        """
+        self._location = location
 
     def valid_move(self, next_loc: tuple):
         """
@@ -242,12 +241,12 @@ class Soldier(MasterPiece):
     """
     Represents a soldier piece. Inherits from MasterPiece.
     """
-    def __init__(self, color: str, name: str, location: tuple):
+    def __init__(self, color: str, name: str, type: str, location: tuple):
         """
         Uses MasterPiece init method to initialize the piece. Adds an in_palace data member to keep
         track of whether the piece is in the enemy palace.
         """
-        super().__init__(color, name, location)
+        super().__init__(color, name, type, location)
 
     def valid_move(self, next_loc: tuple) -> bool:
         """
@@ -257,11 +256,11 @@ class Soldier(MasterPiece):
         param next_loc: space to move to
         return: True if space is within reach, else False
         """
-        cur_loc = self._location
-
         # handle off board spaces
         if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
             return False
+
+        cur_loc = self._location
         
         # handle blue piece moves
         if self._color == 'blue':
@@ -300,11 +299,11 @@ class Cannon(MasterPiece):
     """
     Represents a cannon piece. Inherits from MasterPiece.
     """
-    def __init__(self, color: str, name: str, location: tuple):
+    def __init__(self, color: str, name: str, type: str, location: tuple):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init__(color, name, location)
+        super().__init__(color, name, type, location)
    
     def valid_move(self, next_loc: tuple) -> bool:
         """
@@ -317,7 +316,7 @@ class Cannon(MasterPiece):
         # handle off board spaces
         if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
             return False
-
+        
         cur_loc = self._location
 
         # any strictly horizontal or vertical moves are legal
@@ -338,11 +337,11 @@ class Chariot(MasterPiece):
     """
     Represents a chariot piece. Inherits from MasterPiece.
     """
-    def __init__(self, color: str, name: str, location: tuple):
+    def __init__(self, color: str, name: str, type: str, location: tuple):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init__(color, name, location)
+        super().__init__(color, name, type, location)
 
     def valid_move(self, next_loc: tuple) -> bool:
         """
@@ -383,6 +382,7 @@ class Chariot(MasterPiece):
             return True
 
         cur_loc = self._location
+
         # check horizontal movements
         if cur_loc[0] == next_loc[0]:
                 # increment or decrement value and check each space for occupation
@@ -426,15 +426,16 @@ class Chariot(MasterPiece):
             return True
         return False
 
+
 class Elephant(MasterPiece):
     """
     Represents an elephant piece. Inherits from MasterPiece.
     """
-    def __init__(self, color: str, name: str, location: tuple):
+    def __init__(self, color: str, name: str, type: str, location: tuple):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init__(color, name, location)
+        super().__init__(color, name, type, location)
     
     def valid_move(self, next_loc: tuple) -> bool:
         """
@@ -464,11 +465,11 @@ class Horse(MasterPiece):
     """
     Represents a horse piece. Inherits from MasterPiece.
     """
-    def __init__(self, color: str, name: str, location: tuple):
+    def __init__(self, color: str, name: str, type, location: tuple):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init__(color, name, location)
+        super().__init__(color, name, type, location)
     
     def valid_move(self, next_loc: tuple) -> bool:
         """
@@ -481,7 +482,7 @@ class Horse(MasterPiece):
         # handle off board spaces
         if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
             return False
-
+        
         cur_loc = self._location
 
         # horizontal move, then diagonal
@@ -498,22 +499,22 @@ class Guard(MasterPiece):
     """
     Represents a guard piece. Inherits from MasterPiece.
     """
-    def __init__(self, color: str, name: str, location: tuple):
+    def __init__(self, color: str, name: str, type: str, location: tuple):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init__(color, name, location)
+        super().__init__(color, name, type, location)
 
 
 class General(MasterPiece):
     """
     Represents a general piece. Inherits from MasterPiece.
     """
-    def __init__(self, color: str, name: str, location: tuple):
+    def __init__(self, color: str, name: str, type: str, location: tuple):
         """
         Uses MasterPiece method to initialize the piece.
         """
-        super().__init__(color, name, location)
+        super().__init__(color, name, type, location)
 
 
 class JanggiGame:
@@ -526,78 +527,24 @@ class JanggiGame:
         Initializes the board and pieces and places pieces on the board. Sets up the current state of
         the game and whose turn it is to move.
         """
-        # initialize the playing board
         self._board = Board()
+        self._pieces = {Chariot('red', 'rR1', 'chariot', (0, 0)), Elephant('red', 'rE1', 'elephant', (0, 1)),
+        Horse('red', 'rH1', 'horse', (0, 2)), Guard('red', 'rA1', 'guard', (0, 3)), Guard('red', 'rA2', 'guard', (0, 5)),
+        Elephant('red', 'rE2', 'elephant', (0, 6)), Horse('red', 'rH2', 'horse', (0, 7)), Chariot('red', 'rR1', 'chariot', (0, 8)),
+        Cannon('red', 'rC1', 'cannon', (2, 1)), Cannon('red', 'rC2', 'cannon', (2, 7)), Soldier('red', 'rS1', 'soldier', (3, 0)),
+        Soldier('red', 'rS2', 'soldier', (3, 2)), Soldier('red', 'rS3', 'soldier', (3, 4)),
+        Soldier('red', 'rS4', 'soldier', (3, 6)), Soldier('red', 'rS5', 'soldier', (3, 8)),
+        Soldier('blue', 'bS1', 'soldier', (6, 0)), Soldier('blue', 'bS2', 'soldier', (6, 2)), 
+        Soldier('blue', 'bS3', 'soldier', (6, 4)), Soldier('blue', 'bS4', 'soldier', (6, 6)),
+        Soldier('blue', 'bS5', 'soldier', (6, 8)), Cannon('blue', 'bC1', 'cannon', (7, 1)),
+        Cannon('blue', 'bC2', 'cannon', (7, 7)), Chariot('blue', 'bR1', 'chariot', (9, 0)),
+        Elephant('blue', 'bE1', 'elephant', (9, 1)), Horse('blue', 'bH1', 'horse', (9, 2)), 
+        Guard('blue', 'bA1', 'guard', (9, 3)), Guard('blue', 'bA2', 'guard', (9, 5)),
+        Elephant('blue', 'bE2', 'elephant', (9, 6)), Horse('blue', 'bH2', 'horse', (9, 7)), Chariot('blue', 'bR1', 'chariot', (9, 8)),
+        General('blue', 'bG1', 'general', (8, 4)), General('red', 'rG1', 'general', (1, 4))}
 
-        # initialize the red pieces and place them on the board
-        # chariots will be denoted by R, for their western chess counterpart Rook
-        self._rR1 = Chariot('red', 'rR1', (0, 0))
-        self._board.set_piece(self._rR1)
-        self._rE1 = Elephant('red', 'rE1', (0, 1))
-        self._board.set_piece(self._rE1)
-        self._rH1 = Horse('red', 'rH1', (0, 2))
-        self._board.set_piece(self._rH1)
-        # guards will be denoted by A, for their xiangqi counterpart Advisor
-        self._rA1 = Guard('red', 'rA1', (0, 3))
-        self._board.set_piece(self._rA1)
-        self._rA2 = Guard('red', 'rA2', (0, 5))
-        self._board.set_piece(self._rA2)
-        self._rE2 = Elephant('red', 'rE2', (0, 6))
-        self._board.set_piece(self._rE2)
-        self._rH2 = Horse('red', 'rH2', (0, 7))
-        self._board.set_piece(self._rH2)
-        self._rR2 = Chariot('red', 'rR2', (0, 8))
-        self._board.set_piece(self._rR2)
-        self._rG1 = General('red', 'rG1', (1, 4))
-        self._board.set_piece(self._rG1)
-        self._rC1 = Cannon('red', 'rC1', (2, 1))
-        self._board.set_piece(self._rC1)
-        self._rC2 = Cannon('red', 'rC2', (2, 7))
-        self._board.set_piece(self._rC2)
-        self._rS1 = Soldier('red', 'rS1', (3, 0))
-        self._board.set_piece(self._rS1)
-        self._rS2 = Soldier('red', 'rS2', (3, 2))
-        self._board.set_piece(self._rS2)
-        self._rS3 = Soldier('red', 'rS3', (3, 4))
-        self._board.set_piece(self._rS3)
-        self._rS4 = Soldier('red', 'rS4', (3, 6))
-        self._board.set_piece(self._rS4)
-        self._rS5 = Soldier('red', 'rS5', (3, 8))
-        self._board.set_piece(self._rS5)
-
-        # initialize blue pieces and place on the board
-        self._bR1 = Chariot('blue', 'bR1', (9, 0))
-        self._board.set_piece(self._bR1)
-        self._bE1 = Elephant('blue', 'bE1', (9, 1))
-        self._board.set_piece(self._bE1)
-        self._bH1 = Horse('blue', 'bH1', (9, 2))
-        self._board.set_piece(self._bH1)
-        self._bA1 = Guard('blue', 'bA1', (9, 3))
-        self._board.set_piece(self._bA1)
-        self._bA2 = Guard('blue', 'bA2', (9, 5))
-        self._board.set_piece(self._bA2)
-        self._bE2 = Elephant('blue', 'bE2', (9, 6))
-        self._board.set_piece(self._bE2)
-        self._bH2 = Horse('blue', 'bH2', (9, 7))
-        self._board.set_piece(self._bH2)
-        self._bR2 = Chariot('blue', 'bR2', (9, 8))
-        self._board.set_piece(self._bR2)
-        self._bG1 = General('blue', 'bG1', (8, 4))
-        self._board.set_piece(self._bG1)
-        self._bC1 = Cannon('blue', 'bC1', (7, 1))
-        self._board.set_piece(self._bC1)
-        self._bC2 = Cannon('blue', 'bC2', (7, 7))
-        self._board.set_piece(self._bC2)
-        self._bS1 = Soldier('blue', 'bS1', (6, 0))
-        self._board.set_piece(self._bS1)
-        self._bS2 = Soldier('blue', 'bS2', (6, 2))
-        self._board.set_piece(self._bS2)
-        self._bS3 = Soldier('blue', 'bS3', (6, 4))
-        self._board.set_piece(self._bS3)
-        self._bS4 = Soldier('blue', 'bS4', (6, 6))
-        self._board.set_piece(self._bS4)
-        self._bS5 = Soldier('blue', 'bS5', (6, 8))
-        self._board.set_piece(self._bS5)
+        for piece in self._pieces:
+            self._board.set_piece(piece)
 
         # state of game and player turn initializations
         self._player_turn = 'blue'
