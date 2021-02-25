@@ -129,7 +129,8 @@ class MasterPiece:
     """
     def __init__(self, color: str, name: str, type: str, location: tuple):
         """
-        Initializes the piece color, name, and location. 
+        Initializes the piece color, name, and location. Holds data member of the piece's current valid
+        moves given the most recently updated board.
         """
         self._color = color
         self._name = name
@@ -707,7 +708,7 @@ class General(MasterPiece):
         Uses MasterPiece method to initialize the piece.
         """
         super().__init__(color, name, type, location)
-
+    
 
 class JanggiGame:
     """
@@ -735,12 +736,14 @@ class JanggiGame:
         Elephant('blue', 'bE2', 'elephant', (9, 6)), Horse('blue', 'bH2', 'horse', (9, 7)), Chariot('blue', 'bR1', 'chariot', (9, 8)),
         General('blue', 'bG1', 'general', (8, 4)), General('red', 'rG1', 'general', (1, 4))}
 
-        for piece in self._pieces:
-            self._board.set_piece(piece)
-
-        # state of game and player turn initializations
+        self._red_in_check = False
+        self._blue_in_check = False
+        self._player_swap = {'blue': 'red', 'red': 'blue'}
         self._player_turn = 'blue'
         self._game_state = 'UNFINISHED'
+
+        for piece in self._pieces:
+            self._board.set_piece(piece)
 
         # set initial valid moves
         self.update_valid_moves()
@@ -757,3 +760,20 @@ class JanggiGame:
         """
         for piece in self._pieces:
             piece.set_valid_moves(self._board)
+    
+    def is_in_check(self, color: str) -> bool:
+        """
+        Returns whether the given color general is in check.
+        param color: color of the general to check
+        return: True if general is in check, else False
+        """
+        if color == 'blue':
+            return self._blue_in_check
+        else:
+            return self._red_in_check
+    
+    def alternate_turn(self) -> None:
+        """
+        Updates whose turn it is to move.
+        """
+        self._player_turn = self._player_swap[self._player_turn]
