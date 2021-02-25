@@ -53,11 +53,17 @@ class Board:
             'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8
         }
 
-    def get_board(self) -> None:
+    def get_board(self) -> dict:
         """
         Getter method for accessing board dict.
         """
         return self._board_spaces
+    
+    def set_board(self, board: dict) -> None:
+        """
+        Sets the board to a new board. Used for reverting the board to a previous state.
+        """
+        self._board_spaces = board
 
     def convert_coords(self, coord: str):
         """
@@ -106,7 +112,7 @@ class Board:
 
     def remove_piece(self, coord: tuple) -> None:
         """
-        Removes piece at the current location. Used when a piece is captured.
+        Removes piece at the current location.
         """
         self._board_spaces[coord] = None
 
@@ -828,3 +834,22 @@ class JanggiGame:
         # check that move is valid for the piece
         if dest_coord not in piece.get_valid_moves():
             return False        
+
+        # save current board and piece state to revert when needed
+        revert_pieces = copy(self._pieces)
+        revert_board = copy(self._board.get_board())
+
+        # remove captured piece from piece set when necessary
+        capture_piece = self._board.get_piece(dest_coord)
+        if capture_piece:
+            self._pieces.remove(capture_piece)
+        
+        # update board state and piece location
+        piece.set_location(dest_coord)
+        self._board.remove_piece(cur_coord)
+        self._board.set_piece(piece)
+
+
+
+
+
