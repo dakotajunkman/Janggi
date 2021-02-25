@@ -777,3 +777,53 @@ class JanggiGame:
         Updates whose turn it is to move.
         """
         self._player_turn = self._player_swap[self._player_turn]
+
+    def is_valid_move(self, move_from: str, move_to: str):
+        """
+        Checks that the spaces fed to make_move are on the board, the game state allows for a move, and
+        the correct player is moving.
+        param move_from: space of the piece to move
+        param move_to: space to move the piece to
+        return: False if move is invalid, otherwise returns a tuple of the piece, current coordinate, and
+        destination coordinate
+        """
+        # check that spaces are on the board
+        if self._board.convert_coords(move_from) is None or self._board.convert_coords(move_to) is None:
+            return False
+        
+        piece_loc = self._board.convert_coords(move_from)
+        piece = self._board.get_piece(piece_loc)
+
+        # check that piece belongs to moving player and game is not over
+        if piece.get_color() != self._player_turn or self._game_state != 'UNFINISHED':
+            return False
+        
+        # send back necessary data to continue when move is valid
+        return piece, piece_loc, self._board.convert_coords(move_to)
+        
+    def make_move(self, move_from: str, move_to: str) -> bool:
+        """
+        Handles basic piece movements in the game. Checks that the move is valid and moves the piece
+        and updates the board and game state when it is.
+        param move_from: space of the piece to move
+        param move_to: space to move the piece to
+        return: True when move is valid, otherwise False
+        """
+        # check that the spaces are valid and piece belongs to the correct player
+        valid_move = self.is_valid_move(move_from, move_to)
+        if not valid_move:
+            return False
+        
+        # unpack tuple to get the piece, current coordinate, and destination coordinate
+        piece = valid_move[0]
+        cur_coord = valid_move[1]
+        dest_coord = valid_move[2]
+
+        # check that move is valid for the piece
+        if not piece.valid_move(dest_coord) or piece.is_blocked(dest_coord, self._board):
+            return False
+        
+        
+
+
+        
