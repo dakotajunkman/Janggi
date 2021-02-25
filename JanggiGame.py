@@ -161,6 +161,12 @@ class MasterPiece:
         Getter method for accessing a piece's location.
         """
         return self._location
+    
+    def get_valid_moves(self) -> set:
+        """
+        Returns the piece's current valid destinations.
+        """
+        return self._valid_moves
 
     def set_location(self, location: tuple) -> None:
         """
@@ -820,10 +826,5 @@ class JanggiGame:
         dest_coord = valid_move[2]
 
         # check that move is valid for the piece
-        if not piece.valid_move(dest_coord) or piece.is_blocked(dest_coord, self._board):
-            return False
-        
-        
-
-
-        
+        if dest_coord not in piece.get_valid_moves():
+            return False        
