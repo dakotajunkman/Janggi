@@ -8,10 +8,15 @@ class Board:
     Represents the board of the game. Includes a visual representation of the
     board, a dictionary to represent each space on the board, and a method for
     updating the visual board. Keeps track of where pieces are on the board. 
+    Moves pieces on the board and removes captured pieces from the board.
+    Instantiated by the Game class to be the board of the game. When in the Game class,
+    the board will contain at least one of each of the piece class objects as a way of 
+    keeping track of piece locations.
     """
     def __init__(self):
         """
-        Initializes the board and necessary data members.
+        Initializes a visual board (for debugging), the board spaces which will hold pieces when the game
+        starts, a coordinate map to convert Janggi algebraic notation in to tuple coordinates.
         """
         self._visual_board = [
             ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
@@ -56,12 +61,14 @@ class Board:
     def get_board(self) -> dict:
         """
         Getter method for accessing board dict.
+        return: board spaces dictionary
         """
         return self._board_spaces
     
     def set_board(self, board: dict) -> None:
         """
         Sets the board to a new board. Used for reverting the board to a previous state.
+        return: None
         """
         self._board_spaces = board
 
@@ -88,6 +95,7 @@ class Board:
     def display_board(self) -> None:
         """
         Prints the board to output. Used for debugging only.
+        return: None
         """
         for row in self._visual_board:
             print(row)
@@ -96,6 +104,7 @@ class Board:
         """
         Iterates over dictionary of board spaces and places pieces on the visual
         board in their corresponding position. Used for debugging only.
+        return: None
         """
         # clear board before updating
         self._visual_board = [['   ' for _ in range(9)] for _ in range(10)]
@@ -107,12 +116,14 @@ class Board:
         """
         Sets the piece on the board. Will be used upon game initialization.
         param piece: piece object
+        return: None
         """
         self._board_spaces[piece.get_location()] = piece
 
     def remove_piece(self, coord: tuple) -> None:
         """
-        Removes piece at the current location.
+        Removes piece at the current location. Used when a piece is captured.
+        return: None
         """
         self._board_spaces[coord] = None
 
@@ -131,11 +142,13 @@ class Board:
 class MasterPiece:
     """
     Holds data common to all pieces of the game. Individual pieces will inherit from this class.
-    Named after my code for this assignment.
+    Named after my code for this assignment (joke). Some of the methods will be called in the game class
+    to get and set data, or to check for valid moves and whether a piece is blocked. It will also
+    interact with Board class to check for valid moves of a piece.
     """
     def __init__(self, color: str, name: str, type: str, location: tuple):
         """
-        Initializes the piece color, name, and location. Holds data member of the piece's current valid
+        Initializes the piece color, name, type, and location. Holds data member of the piece's current valid
         moves given the most recently updated board.
         """
         self._color = color
@@ -147,48 +160,56 @@ class MasterPiece:
     def get_name(self) -> str:
         """
         Getter method for accessing piece name.
+        return: name of the piece
         """
         return self._name
 
     def get_color(self) -> str:
         """
         Getter method for accessing the piece's color.
+        return: color of the piece
         """
         return self._color
 
     def get_type(self) -> str:
         """
         Getter method for accessing piece type.
+        return: type of the piece
         """
         return self._type
 
     def get_location(self) -> tuple:
         """
         Getter method for accessing a piece's location.
+        return: piece's coordinate location
         """
         return self._location
     
     def get_valid_moves(self) -> set:
         """
-        Returns the piece's current valid destinations.
+        Getter method for accessing a piece's valid moves.
+        return: set of the pieces valid move-to coordinates
         """
         return self._valid_moves
 
     def set_location(self, location: tuple) -> None:
         """
         Sets the piece's location.
+        return: None
         """
         self._location = location
     
     def add_move(self, coord: tuple) -> None:
         """
         Adds destination coord to the piece's valid moves.
+        return: None
         """
         self._valid_moves.add(coord)
     
     def clear_moves(self) -> None:
         """
-        Clears the piece's list of valid moves.
+        Clears the piece's list of valid moves. Used before refilling so invalid moves do not persist.
+        return: None
         """
         self._valid_moves.clear()
     
@@ -196,6 +217,7 @@ class MasterPiece:
         """
         Loops through each space on the board and checks if it is a valid destination for the piece.
         Adds all valid destinations to the piece's valid moves set. Set is wiped clean before looping.
+        return: None
         """
         # clear set before adding spaces
         self.clear_moves()
@@ -284,12 +306,12 @@ class MasterPiece:
 
 class Soldier(MasterPiece):
     """
-    Represents a soldier piece. Inherits from MasterPiece.
+    Represents a soldier piece. Inherits from MasterPiece. Will be instantiated by Game class, and contained
+    in the Board class. 
     """
     def __init__(self, color: str, name: str, type: str, location: tuple):
         """
-        Uses MasterPiece init method to initialize the piece. Adds an in_palace data member to keep
-        track of whether the piece is in the enemy palace.
+        Uses MasterPiece init method to initialize the piece. 
         """
         super().__init__(color, name, type, location)
 
@@ -342,7 +364,8 @@ class Soldier(MasterPiece):
            
 class Cannon(MasterPiece):
     """
-    Represents a cannon piece. Inherits from MasterPiece.
+    Represents a cannon piece. Inherits from MasterPiece. Will be instantiated in the Game class and contained
+    in the Board class.
     """
     def __init__(self, color: str, name: str, type: str, location: tuple):
         """
@@ -379,9 +402,8 @@ class Cannon(MasterPiece):
     
     def is_blocked(self, next_loc: tuple, board) -> bool:
         """
-        Determines whether a piece is blocked from moving to it's desired location. Soldier, guard 
-        and general will inherit this method. Does not take in to account if the space is a valid move 
-        for the piece.
+        Determines whether a piece is blocked from moving to it's desired location. Does not take in to account  
+        if the space is a valid move for the piece.
         param next_loc: desired move-to location of the piece
         param board: the current game board
         return: True if piece is blocked, else False
@@ -459,7 +481,8 @@ class Cannon(MasterPiece):
 
 class Chariot(MasterPiece):
     """
-    Represents a chariot piece. Inherits from MasterPiece.
+    Represents a chariot piece. Inherits from MasterPiece. Will be instantiated in the Game class and contained
+    in the Board class.
     """
     def __init__(self, color: str, name: str, type: str, location: tuple):
         """
@@ -495,9 +518,8 @@ class Chariot(MasterPiece):
 
     def is_blocked(self, next_loc: tuple, board) -> bool:
         """
-        Determines whether a piece is blocked from moving to it's desired location. Soldier, guard 
-        and general will inherit this method. Does not take in to account if the space is a valid move 
-        for the piece.
+        Determines whether a piece is blocked from moving to it's desired location. Does not take in to account 
+        if the space is a valid move for the piece.
         param next_loc: desired move-to location of the piece
         param board: the current game board
         return: True if piece is blocked, else False
@@ -553,7 +575,8 @@ class Chariot(MasterPiece):
 
 class Elephant(MasterPiece):
     """
-    Represents an elephant piece. Inherits from MasterPiece.
+    Represents an elephant piece. Inherits from MasterPiece. Will be instantiated by Game class and contained
+    in the Board class. 
     """
     def __init__(self, color: str, name: str, type: str, location: tuple):
         """
@@ -586,9 +609,8 @@ class Elephant(MasterPiece):
 
     def is_blocked(self, next_loc: tuple, board) -> bool:
         """
-        Determines whether a piece is blocked from moving to it's desired location. Soldier, guard 
-        and general will inherit this method. Does not take in to account if the space is a valid move 
-        for the piece.
+        Determines whether a piece is blocked from moving to it's desired location. Does not take in to account if 
+        the space is a valid move for the piece.
         param next_loc: desired move-to location of the piece
         param board: the current game board
         return: True if piece is blocked, else False
@@ -634,7 +656,8 @@ class Elephant(MasterPiece):
 
 class Horse(MasterPiece):
     """
-    Represents a horse piece. Inherits from MasterPiece.
+    Represents a horse piece. Inherits from MasterPiece. Will be instantiated in the Game class and contained
+    in the Board class.
     """
     def __init__(self, color: str, name: str, type, location: tuple):
         """
@@ -667,9 +690,8 @@ class Horse(MasterPiece):
 
     def is_blocked(self, next_loc: tuple, board) -> bool:
         """
-        Determines whether a piece is blocked from moving to it's desired location. Soldier, guard 
-        and general will inherit this method. Does not take in to account if the space is a valid move 
-        for the piece.
+        Determines whether a piece is blocked from moving to it's desired location. Does not take in to account if 
+        the space is a valid move for the piece.
         param next_loc: desired move-to location of the piece
         param board: the current game board
         return: True if piece is blocked, else False
@@ -702,7 +724,8 @@ class Horse(MasterPiece):
 
 class Guard(MasterPiece):
     """
-    Represents a guard piece. Inherits from MasterPiece.
+    Represents a guard piece. Inherits from MasterPiece. Will be instantiated in the Game class and contained
+    in the Board class.
     """
     def __init__(self, color: str, name: str, type: str, location: tuple):
         """
@@ -713,7 +736,8 @@ class Guard(MasterPiece):
 
 class General(MasterPiece):
     """
-    Represents a general piece. Inherits from MasterPiece.
+    Represents a general piece. Inherits from MasterPiece. Will be instantiated in the Game class and contained
+    in the Board class.
     """
     def __init__(self, color: str, name: str, type: str, location: tuple):
         """
@@ -725,7 +749,8 @@ class General(MasterPiece):
 class JanggiGame:
     """
     Represents the actual game. Game state is updated and moves are made using the piece and board
-    objects.
+    objects. Keeps track of whose turn it is to move, the state of the game, and whether or not a player is 
+    in check. Instantiates a board and all pieces. Keeps track of current available pieces for each player. 
     """
     def __init__(self):
         """
@@ -769,6 +794,7 @@ class JanggiGame:
     def update_valid_moves(self) -> None:
         """
         Updates the valid moves for each piece on the board.
+        return: None
         """
         for piece in self._pieces:
             piece.set_valid_moves(self._board)
@@ -787,6 +813,7 @@ class JanggiGame:
     def alternate_turn(self) -> None:
         """
         Updates whose turn it is to move.
+        return: None
         """
         self._player_turn = self._player_swap[self._player_turn]
 
@@ -815,8 +842,11 @@ class JanggiGame:
         
     def make_move(self, move_from: str, move_to: str) -> bool:
         """
-        Handles basic piece movements in the game. Checks that the move is valid and moves the piece
-        and updates the board and game state when it is.
+        Handles basic piece movements in the game. Calls is_valid_move to check move validity and moves the piece
+        and updates the board and game state when it is. After the move, it calls is_self_check to check if the move
+        resulted in check for the moving player. It will then check if the move created check for the opposing player.
+        When check is detected, it will check for a checkmate scenario and update the game status accordingly.
+        Upon a valid move with no game state updates, the player turn will be swapped using alternate_turn.
         param move_from: space of the piece to move
         param move_to: space to move the piece to
         return: True when move is valid, otherwise False
@@ -841,7 +871,7 @@ class JanggiGame:
 
         # remove captured piece from piece set when necessary
         capture_piece = self._board.get_piece(dest_coord)
-        if capture_piece:
+        if capture_piece is not None:
             self._pieces.remove(capture_piece)
         
         # update board state and piece location
@@ -849,6 +879,28 @@ class JanggiGame:
         self._board.remove_piece(cur_coord)
         self._board.set_piece(piece)
 
+        ########################### METHOD UNFINISHED #############################################
+
+    def is_check(self, color: str, board) -> bool:
+        """
+        Checks whether the most recent move of the player has created a check.
+        Locates the player's general and checks if it's location is a valid move for the opposing player.
+        This will serve dual-purpose, checking for self-check and opponent check based on the color passed. 
+        param color: color of the player to check
+        param board: current state of the board
+        return: True if self-check created, otherwise False.
+        """
+        pass
+
+    def is_mate(self, color: str, board) -> bool:
+        """
+        Determines if a checkmate scenario has been created. Will only run if check was created on previous turn.
+        Runs through the color's valid moves and determines if any will eliminate the check scenario.
+        param color: color of player to check
+        param board: current state of the board
+        return: True if checkmate, else False
+        """
+        pass
 
 
 
