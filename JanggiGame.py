@@ -866,8 +866,8 @@ class JanggiGame:
             return False        
 
         # save current board and piece state to revert when needed
-        revert_pieces = copy(self._pieces)
-        revert_board = copy(self._board.get_board())
+        revert_pieces = self._pieces.copy()
+        revert_board = self._board.get_board().copy()
 
         # remove captured piece from piece set when necessary
         capture_piece = self._board.get_piece(dest_coord)
@@ -878,6 +878,38 @@ class JanggiGame:
         piece.set_location(dest_coord)
         self._board.remove_piece(cur_coord)
         self._board.set_piece(piece)
+
+        # ensure that self-check has not been created
+        self.update_valid_moves()
+        if self.is_check(self._player_turn, self._board):
+
+            # when self-check occurs, revert board and pieces back to previous state
+            # set piece location back to previous
+            # re-calculate valid moves
+            self._pieces = revert_pieces
+            self._board.set_board(revert_board)
+            piece.set_location(cur_coord)
+            self.update_valid_moves()
+            return False
+
+        # detect if opponent has been placed in check
+        if self.is_check(self._player_swap[self._player_turn], self._board):
+            if self._player_swap[self._player_turn] == 'blue':
+                self._blue_in_check = True
+            else:
+                self._red_in_check = True
+            
+            ############ CARRY ON TO MATE CHECK ###########################
+        
+        # once a player completes a valid move they are guaranteed to not be in check
+        if self._player_turn == 'blue':
+            self._blue_in_check = False
+        else:
+            self._red_in_check = False
+
+        # update player turn and finish method
+        self.alternate_turn()
+        return True
 
         ########################### METHOD UNFINISHED #############################################
 
@@ -890,7 +922,19 @@ class JanggiGame:
         param board: current state of the board
         return: True if self-check created, otherwise False.
         """
-        pass
+        # locate the general and get its location coordinate
+        for piece in self._pieces:
+            if piece.get_type() == 'general' and piece.get_color() == color:
+                general = piece
+                break
+        
+        coord = general.get_location()
+
+        # check if the general's location is a valid move for opposing players
+        for piece in self._pieces:
+            if piece.get_color() == self._player_swap[color] and coord in piece.get_valid_moves():
+                return True
+        return False
 
     def is_mate(self, color: str, board) -> bool:
         """
@@ -901,7 +945,4 @@ class JanggiGame:
         return: True if checkmate, else False
         """
         pass
-
-
-
 
