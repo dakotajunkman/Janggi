@@ -97,9 +97,30 @@ class Board:
         Prints the board to output. Used for debugging only.
         return: None
         """
-        for row in self._visual_board:
-            print(row)
-    
+        print('     A      B      C      D      E      F      G      H      I')
+        print('   ---------------------------------------------------------------')
+        print('1 ', self._visual_board[0], 1)
+        print('   ---------------------------------------------------------------')
+        print('2 ', self._visual_board[1], 2)
+        print('   ---------------------------------------------------------------')
+        print('3 ', self._visual_board[2], 3)
+        print('   ---------------------------------------------------------------')
+        print('4 ', self._visual_board[3], 4)
+        print('   ---------------------------------------------------------------')
+        print('5 ', self._visual_board[4], 5)
+        print('   ---------------------------------------------------------------')
+        print('6 ', self._visual_board[5], 6)
+        print('   ---------------------------------------------------------------')
+        print('7 ', self._visual_board[6], 7)
+        print('   ---------------------------------------------------------------')
+        print('8 ', self._visual_board[7], 8)
+        print('   ---------------------------------------------------------------')
+        print('9 ', self._visual_board[8], 9)
+        print('   ---------------------------------------------------------------')
+        print(10, self._visual_board[9], 10)
+        print('   ---------------------------------------------------------------')
+        print('     A      B      C      D      E      F      G      H      I')
+
     def update_visual_board(self) -> None:
         """
         Iterates over dictionary of board spaces and places pieces on the visual
@@ -242,53 +263,23 @@ class MasterPiece:
             # cannot move out of the palace
             if (next_loc[0] < 7 or next_loc[0] > 9) or (next_loc[1] < 3 or next_loc[1] > 5):
                 return False
-            
-            # handle vertical and horizontal moves
-            if abs(next_loc[0] - cur_loc[0]) == 1 and next_loc[1] == cur_loc[1]:
-                return True
-            if abs(next_loc[1] - cur_loc[1]) == 1 and next_loc[0] == cur_loc[0]:
-                return True
-            
-            # handle diagonal moves
-            if (cur_loc == (9, 3) and next_loc == (8, 4)) or (cur_loc == (8, 4) and next_loc == (9, 3)):
-                return True
-            
-            if (cur_loc == (9, 5) and next_loc == (8, 4)) or (cur_loc == (8, 4) and next_loc == (9, 5)):
-                return True
-            
-            if (cur_loc == (7, 3) and next_loc == (8, 4)) or (cur_loc == (8, 4) and next_loc == (7, 3)):
-                return True
-            
-            if (cur_loc == (7, 5) and next_loc == (8, 4)) or (cur_loc == (8, 4) and next_loc == (7, 5)):
-                return True
-            return False
-        
-        # handle red moves
+
         else:
             # cannot move out of the palace
             if (next_loc[0] > 2 or next_loc[0] < 0) or (next_loc[1] < 3 or next_loc[1] > 5):
                 return False
             
-            # handle vertical and horizontal moves
-            if abs(next_loc[0] - cur_loc[0]) == 1 and next_loc[1] == cur_loc[1]:
-                return True
-            if abs(next_loc[1] - cur_loc[1]) == 1 and next_loc[0] == cur_loc[0]:
-                return True
-
-            # handle diagonal moves
-            if (cur_loc == (0, 3) and next_loc == (1, 4)) or (cur_loc == (1, 4) and next_loc == (0, 3)):
-                return True
-            
-            if (cur_loc == (0, 5) and next_loc == (1, 4)) or (cur_loc == (1, 4) and next_loc == (0, 5)):
-                return True
-            
-            if (cur_loc == (2, 3) and next_loc == (1, 4)) or (cur_loc == (1, 4) and next_loc == (2, 3)):
-                return True
-            
-            if (cur_loc == (2, 5) and next_loc == (1, 4)) or (cur_loc == (1, 4) and next_loc == (2, 5)):
-                return True
-            return False
-
+        # handle vertical and horizontal moves
+        if abs(next_loc[0] - cur_loc[0]) == 1 and next_loc[1] == cur_loc[1]:
+            return True
+        if abs(next_loc[1] - cur_loc[1]) == 1 and next_loc[0] == cur_loc[0]:
+            return True
+        
+        # handle diagonal moves
+        if abs(next_loc[1] - cur_loc[1]) == 1 and abs(next_loc[0] - cur_loc[0]) == 1:
+            return True
+        return False
+        
     def is_blocked(self, next_loc: tuple, board) -> bool:
         """
         Determines whether a piece is blocked from moving to it's desired location. Soldier, guard 
@@ -760,7 +751,7 @@ class JanggiGame:
         self._board = Board()
         self._pieces = {Chariot('red', 'rR1', 'chariot', (0, 0)), Elephant('red', 'rE1', 'elephant', (0, 1)),
         Horse('red', 'rH1', 'horse', (0, 2)), Guard('red', 'rA1', 'guard', (0, 3)), Guard('red', 'rA2', 'guard', (0, 5)),
-        Elephant('red', 'rE2', 'elephant', (0, 6)), Horse('red', 'rH2', 'horse', (0, 7)), Chariot('red', 'rR1', 'chariot', (0, 8)),
+        Elephant('red', 'rE2', 'elephant', (0, 6)), Horse('red', 'rH2', 'horse', (0, 7)), Chariot('red', 'rR2', 'chariot', (0, 8)),
         Cannon('red', 'rC1', 'cannon', (2, 1)), Cannon('red', 'rC2', 'cannon', (2, 7)), Soldier('red', 'rS1', 'soldier', (3, 0)),
         Soldier('red', 'rS2', 'soldier', (3, 2)), Soldier('red', 'rS3', 'soldier', (3, 4)),
         Soldier('red', 'rS4', 'soldier', (3, 6)), Soldier('red', 'rS5', 'soldier', (3, 8)),
@@ -770,7 +761,7 @@ class JanggiGame:
         Cannon('blue', 'bC2', 'cannon', (7, 7)), Chariot('blue', 'bR1', 'chariot', (9, 0)),
         Elephant('blue', 'bE1', 'elephant', (9, 1)), Horse('blue', 'bH1', 'horse', (9, 2)), 
         Guard('blue', 'bA1', 'guard', (9, 3)), Guard('blue', 'bA2', 'guard', (9, 5)),
-        Elephant('blue', 'bE2', 'elephant', (9, 6)), Horse('blue', 'bH2', 'horse', (9, 7)), Chariot('blue', 'bR1', 'chariot', (9, 8)),
+        Elephant('blue', 'bE2', 'elephant', (9, 6)), Horse('blue', 'bH2', 'horse', (9, 7)), Chariot('blue', 'bR2', 'chariot', (9, 8)),
         General('blue', 'bG1', 'general', (8, 4)), General('red', 'rG1', 'general', (1, 4))}
 
         self._red_in_check = False
@@ -820,7 +811,7 @@ class JanggiGame:
     def is_valid_move(self, move_from: str, move_to: str):
         """
         Checks that the spaces fed to make_move are on the board, the game state allows for a move, and
-        the correct player is moving.
+        the correct player is moving. Also checks that the space has a piece to move.
         param move_from: space of the piece to move
         param move_to: space to move the piece to
         return: False if move is invalid, otherwise returns a tuple of the piece, current coordinate, and
@@ -832,6 +823,9 @@ class JanggiGame:
         
         piece_loc = self._board.convert_coords(move_from)
         piece = self._board.get_piece(piece_loc)
+
+        if self._board.get_piece(piece_loc) is None:
+            return False
 
         # check that piece belongs to moving player and game is not over
         if piece.get_color() != self._player_turn or self._game_state != 'UNFINISHED':
@@ -851,6 +845,11 @@ class JanggiGame:
         param move_to: space to move the piece to
         return: True when move is valid, otherwise False
         """
+        # allow player to pass a turn
+        if move_from == move_to:
+            self.alternate_turn()
+            return True
+
         # check that the spaces are valid and piece belongs to the correct player
         valid_move = self.is_valid_move(move_from, move_to)
         if not valid_move:
@@ -881,7 +880,7 @@ class JanggiGame:
 
         # ensure that self-check has not been created
         self.update_valid_moves()
-        if self.is_check(self._player_turn, self._board):
+        if self.is_check(self._player_turn):
 
             # when self-check occurs, revert board and pieces back to previous state
             # set piece location back to previous
@@ -893,13 +892,15 @@ class JanggiGame:
             return False
 
         # detect if opponent has been placed in check
-        if self.is_check(self._player_swap[self._player_turn], self._board):
+        if self.is_check(self._player_swap[self._player_turn]):
             if self._player_swap[self._player_turn] == 'blue':
                 self._blue_in_check = True
             else:
                 self._red_in_check = True
             
-            ############ CARRY ON TO MATE CHECK ###########################
+            if self.is_mate(self._player_swap[self._player_turn]):
+                self._game_state = self._player_turn.upper() + '_WON'
+                return True
         
         # once a player completes a valid move they are guaranteed to not be in check
         if self._player_turn == 'blue':
@@ -911,9 +912,7 @@ class JanggiGame:
         self.alternate_turn()
         return True
 
-        ########################### METHOD UNFINISHED #############################################
-
-    def is_check(self, color: str, board) -> bool:
+    def is_check(self, color: str) -> bool:
         """
         Checks whether the most recent move of the player has created a check.
         Locates the player's general and checks if it's location is a valid move for the opposing player.
@@ -936,13 +935,51 @@ class JanggiGame:
                 return True
         return False
 
-    def is_mate(self, color: str, board) -> bool:
+    def is_mate(self, color: str) -> bool:
         """
         Determines if a checkmate scenario has been created. Will only run if check was created on previous turn.
         Runs through the color's valid moves and determines if any will eliminate the check scenario.
         param color: color of player to check
-        param board: current state of the board
         return: True if checkmate, else False
         """
-        pass
+        # iterate over player pieces and examine all moves to see if check can be eliminated
+        for piece in self._pieces:
+            if piece.get_color() == color:
+                moves = piece.get_valid_moves().copy()
 
+                # check all moves
+                for move in moves:
+                    revert_board = self._board.get_board().copy()
+                    old_coord = piece.get_location()
+                    piece.set_location(move)
+                    self._board.remove_piece(old_coord)
+                    self._board.set_piece(piece)
+                    self.update_valid_moves()
+                    if not self.is_check(color):
+                        self._board.set_board(revert_board)
+                        piece.set_location(old_coord)
+                        self.update_valid_moves()
+                        return False
+                    else:
+                        self._board.set_board(revert_board)
+                        piece.set_location(old_coord)
+                        self.update_valid_moves()
+        return True
+
+def test_this_bitch():
+    """
+    Testing this bitch.
+    """
+    game = JanggiGame()
+
+    while game.get_game_state() == 'UNFINISHED':
+        print(game._player_turn, 'turn')
+        _from = input('Move from: ')
+        to = input('Move to: ')
+        game.make_move(_from, to)
+        game._board.update_visual_board()
+        game._board.display_board()
+    print(game.get_game_state())
+
+
+test_this_bitch()
