@@ -965,21 +965,3 @@ class JanggiGame:
                         piece.set_location(old_coord)
                         self.update_valid_moves()
         return True
-
-def test_this_bitch():
-    """
-    Testing this bitch.
-    """
-    game = JanggiGame()
-
-    while game.get_game_state() == 'UNFINISHED':
-        print(game._player_turn, 'turn')
-        _from = input('Move from: ')
-        to = input('Move to: ')
-        game.make_move(_from, to)
-        game._board.update_visual_board()
-        game._board.display_board()
-    print(game.get_game_state())
-
-
-test_this_bitch()
