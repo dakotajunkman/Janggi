@@ -998,6 +998,7 @@ def play_game():
         game.make_move(move_from, move_to)
         game.get_board().update_visual_board()
         game.get_board().display_board()
+    print(game.get_game_state())
 
 if __name__ == '__main__':
     play_game()
