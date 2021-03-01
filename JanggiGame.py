@@ -15,7 +15,7 @@ class Board:
     """
     def __init__(self):
         """
-        Initializes a visual board (for debugging), the board spaces which will hold pieces when the game
+        Initializes a visual board (for game loop), the board spaces which will hold pieces when the game
         starts, a coordinate map to convert Janggi algebraic notation in to tuple coordinates.
         """
         self._visual_board = [
@@ -94,31 +94,17 @@ class Board:
 
     def display_board(self) -> None:
         """
-        Prints the board to output. Used for debugging only.
+        Prints the board to output. Used in game loop.
         return: None
         """
         print('      A      B      C      D      E      F      G      H      I')
         print('   ---------------------------------------------------------------')
-        print('1 ', self._visual_board[0], 1)
-        print('   ---------------------------------------------------------------')
-        print('2 ', self._visual_board[1], 2)
-        print('   ---------------------------------------------------------------')
-        print('3 ', self._visual_board[2], 3)
-        print('   ---------------------------------------------------------------')
-        print('4 ', self._visual_board[3], 4)
-        print('   ---------------------------------------------------------------')
-        print('5 ', self._visual_board[4], 5)
-        print('   ---------------------------------------------------------------')
-        print('6 ', self._visual_board[5], 6)
-        print('   ---------------------------------------------------------------')
-        print('7 ', self._visual_board[6], 7)
-        print('   ---------------------------------------------------------------')
-        print('8 ', self._visual_board[7], 8)
-        print('   ---------------------------------------------------------------')
-        print('9 ', self._visual_board[8], 9)
-        print('   ---------------------------------------------------------------')
-        print(10, self._visual_board[9], 10)
-        print('   ---------------------------------------------------------------')
+        for index in range(10):
+            if index < 9:
+                print(str(index + 1) + ' ', self._visual_board[index], index + 1)
+            else:
+                print(index + 1, self._visual_board[index], index + 1)
+            print('   ---------------------------------------------------------------')
         print('      A      B      C      D      E      F      G      H      I')
 
     def update_visual_board(self) -> None:
