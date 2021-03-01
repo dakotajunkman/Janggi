@@ -97,7 +97,7 @@ class Board:
         Prints the board to output. Used for debugging only.
         return: None
         """
-        print('     A      B      C      D      E      F      G      H      I')
+        print('      A      B      C      D      E      F      G      H      I')
         print('   ---------------------------------------------------------------')
         print('1 ', self._visual_board[0], 1)
         print('   ---------------------------------------------------------------')
@@ -119,7 +119,7 @@ class Board:
         print('   ---------------------------------------------------------------')
         print(10, self._visual_board[9], 10)
         print('   ---------------------------------------------------------------')
-        print('     A      B      C      D      E      F      G      H      I')
+        print('      A      B      C      D      E      F      G      H      I')
 
     def update_visual_board(self) -> None:
         """
@@ -782,6 +782,18 @@ class JanggiGame:
         """
         return self._game_state
     
+    def get_board(self):
+        """
+        Returns the board object. Used for game loop.
+        """
+        return self._board
+
+    def get_player_turn(self):
+        """
+        Returns whose turn it is to move. Used for game loop.
+        """
+        return self._player_turn
+
     def update_valid_moves(self) -> None:
         """
         Updates the valid moves for each piece on the board.
@@ -845,10 +857,14 @@ class JanggiGame:
         param move_to: space to move the piece to
         return: True when move is valid, otherwise False
         """
-        # allow player to pass a turn
-        if move_from == move_to:
+        # allow player to pass a turn when not in check
+        if move_from == move_to and not self.is_in_check(self._player_turn):
             self.alternate_turn()
             return True
+        
+        # do not allow a pass when the player is in check
+        if move_from == move_to and self.is_in_check(self._player_turn):
+            return False
 
         # check that the spaces are valid and piece belongs to the correct player
         valid_move = self.is_valid_move(move_from, move_to)
@@ -965,3 +981,23 @@ class JanggiGame:
                         piece.set_location(old_coord)
                         self.update_valid_moves()
         return True
+
+
+def play_game():
+    """
+    Creates a game loop to play the game.
+    """
+    game = JanggiGame()
+    game.get_board().update_visual_board()
+    game.get_board().display_board()
+
+    while game.get_game_state() == 'UNFINISHED':
+        print(game.get_player_turn(), 'turn')
+        move_from = input('Move from: ')
+        move_to = input('Move to: ')
+        game.make_move(move_from, move_to)
+        game.get_board().update_visual_board()
+        game.get_board().display_board()
+
+if __name__ == '__main__':
+    play_game()
