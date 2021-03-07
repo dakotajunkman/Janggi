@@ -110,7 +110,7 @@ class Board:
     def update_visual_board(self) -> None:
         """
         Iterates over dictionary of board spaces and places pieces on the visual
-        board in their corresponding position. Used for debugging only.
+        board in their corresponding position. Used in game loop.
         return: None
         """
         # clear board before updating
