@@ -300,10 +300,6 @@ class Soldier(MasterPiece):
         param next_loc: space to move to
         return: True if space is within reach, else False
         """
-        # handle off board spaces
-        if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
-            return False
-
         cur_loc = self._location
         
         # handle blue piece moves
@@ -357,11 +353,7 @@ class Cannon(MasterPiece):
         whether the space is occupied, etc.
         param next_loc: space to move to
         return: True if space is within reach, else False
-        """     
-        # handle off board spaces
-        if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
-            return False
-        
+        """             
         cur_loc = self._location
 
         # any strictly horizontal or vertical moves are legal
@@ -475,10 +467,6 @@ class Chariot(MasterPiece):
         param next_loc: space to move to
         return: True if space is within reach, else False
         """     
-        # handle off board spaces
-        if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
-            return False
-
         cur_loc = self._location
 
         # any strictly horizontal or vertical moves are legal
@@ -569,10 +557,6 @@ class Elephant(MasterPiece):
         param next_loc: space to move to
         return: True if space is within reach, else False
         """   
-        # handle off board spaces
-        if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
-            return False
-
         cur_loc = self._location
 
         # horizontal move, then diagonal
@@ -649,11 +633,7 @@ class Horse(MasterPiece):
         whether the space is occupied, etc.
         param next_loc: space to move to
         return: True if space is within reach, else False
-        """   
-        # handle off board spaces
-        if next_loc[0] < 0 or next_loc[0] > 9 or next_loc[1] < 0 or next_loc[1] > 8:
-            return False
-        
+        """           
         cur_loc = self._location
 
         # horizontal move, then diagonal
@@ -949,23 +929,31 @@ class JanggiGame:
             if piece.get_color() == color:
                 moves = piece.get_valid_moves().copy()
 
-                # check all moves
+                # iterate over the piece's moves
                 for move in moves:
                     revert_board = self._board.get_board().copy()
                     old_coord = piece.get_location()
+
+                    # make the move and see if it removed check
                     piece.set_location(move)
                     self._board.remove_piece(old_coord)
                     self._board.set_piece(piece)
                     self.update_valid_moves()
+
+                    # when check is removed, the game is not in checkmate
                     if not self.is_check(color):
                         self._board.set_board(revert_board)
                         piece.set_location(old_coord)
                         self.update_valid_moves()
                         return False
+
+                    # when check is not removed, reset the board and try again with next move
                     else:
                         self._board.set_board(revert_board)
                         piece.set_location(old_coord)
                         self.update_valid_moves()
+
+        # when no piece can remove check, the game is in checkmate
         return True
 
 
@@ -984,7 +972,10 @@ def play_game():
         game.make_move(move_from, move_to)
         game.get_board().update_visual_board()
         game.get_board().display_board()
+        if game.is_in_check(game.get_player_turn()):
+            print(game.get_player_turn(), 'is in check')
     print(game.get_game_state())
 
 if __name__ == '__main__':
     play_game()
+
