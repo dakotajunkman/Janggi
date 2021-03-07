@@ -250,19 +250,29 @@ class MasterPiece:
             if (next_loc[0] < 7 or next_loc[0] > 9) or (next_loc[1] < 3 or next_loc[1] > 5):
                 return False
 
+            blue_palace_x = [(7, 3), (7, 5), (8, 4), (9, 3), (9, 5)]       
+
+            # handle diagonal moves in palace
+            if cur_loc in blue_palace_x and next_loc in blue_palace_x:
+                if abs(cur_loc[0] - next_loc[0]) == 1 and abs(cur_loc[1] - next_loc[1]) == 1:
+                    return True    
+
         else:
             # cannot move out of the palace
             if (next_loc[0] > 2 or next_loc[0] < 0) or (next_loc[1] < 3 or next_loc[1] > 5):
                 return False
-            
+
+            red_palace_x = [(0, 3), (0, 5), (1, 4), (2, 3), (2, 5)]     
+
+            # handle diagonal moves in palace
+            if cur_loc in red_palace_x and next_loc in red_palace_x:
+                if abs(cur_loc[0] - next_loc[0]) == 1 and abs(cur_loc[1] - next_loc[1]) == 1:
+                    return True             
+                  
         # handle vertical and horizontal moves
         if abs(next_loc[0] - cur_loc[0]) == 1 and next_loc[1] == cur_loc[1]:
             return True
         if abs(next_loc[1] - cur_loc[1]) == 1 and next_loc[0] == cur_loc[0]:
-            return True
-        
-        # handle diagonal moves
-        if abs(next_loc[1] - cur_loc[1]) == 1 and abs(next_loc[0] - cur_loc[0]) == 1:
             return True
         return False
         
