@@ -942,9 +942,13 @@ class JanggiGame:
                 # iterate over the piece's moves
                 for move in moves:
                     revert_board = self._board.get_board().copy()
+                    revert_pieces = self._pieces.copy()
                     old_coord = piece.get_location()
 
                     # make the move and see if it removed check
+                    capture_piece = self._board.get_piece(move)
+                    if capture_piece is not None:
+                        self._pieces.remove(capture_piece)
                     piece.set_location(move)
                     self._board.remove_piece(old_coord)
                     self._board.set_piece(piece)
@@ -952,6 +956,7 @@ class JanggiGame:
 
                     # when check is removed, the game is not in checkmate
                     if not self.is_check(color):
+                        self._pieces = revert_pieces
                         self._board.set_board(revert_board)
                         piece.set_location(old_coord)
                         self.update_valid_moves()
@@ -959,6 +964,7 @@ class JanggiGame:
 
                     # when check is not removed, reset the board and try again with next move
                     else:
+                        self._pieces = revert_pieces
                         self._board.set_board(revert_board)
                         piece.set_location(old_coord)
                         self.update_valid_moves()
