@@ -20,11 +20,11 @@ Pieces are represented on the board textually. The first letter is 'r' or 'b' fo
 ## Illustrations
 The game utilizes algebraic notation to represent squares. Columns are letters and rows are numbers.
 Players type in the square to move from to select the piece to move, then select the square to move
-to in order to move the piece. 
+to in order to move the piece. <br/><br/>
 ![](./gifs/opening-move.gif)
 
-When a player's general is threatened, an output message notifies the player that they are in check. 
+When a player's general is threatened, an output message notifies the player that they are in check. <br/><br/>
 ![](./gifs/check.gif)
 
-When the game has been won, the game loop terminates and the player that won the game is displayed to output. 
+When the game has been won, the game loop terminates and the player that won the game is displayed to output. <br/><br/>
 ![](./gifs/checkmate.gif)
