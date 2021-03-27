@@ -1,8 +1,3 @@
-# Author: Dakota Junkman 
-# Date: 02/20/2021
-# Description: A backend implementation of the abstract board game, Janggi
-# (also known as Korean Chess).
-
 class Board:
     """
     Represents the board of the game. Includes a visual representation of the
