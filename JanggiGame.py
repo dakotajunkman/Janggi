@@ -229,7 +229,8 @@ class JanggiGame:
         return: True if checkmate, else False
         """
         # iterate over player pieces and examine all moves to see if check can be eliminated
-        for piece in self._pieces:
+        # create a new list object of pieces to iterate over
+        for piece in list(self._pieces):
             if piece.get_color() == color:
                 moves = piece.get_valid_moves().copy()
 
