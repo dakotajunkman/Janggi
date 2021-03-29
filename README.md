@@ -8,20 +8,20 @@ A command line implementation of the abstract board game [Janggi (Korean Chess)]
 My approach to building this game was to use object oriented programming (OOP). I built a board class to represent the board and specific spaces on the board. The board class also kept track of whether a space was occupied, and by what piece. For the pieces, I implemented a MasterPiece class that individual pieces inherit from which held several of the basic piece data members, such as the type, color, valid moves, and location. Individual piece classes contained methods that handled the piece's movement capabilities to determine move validity. The Game class initializes the board and places pieces on the board. It keeps track of whose turn it is to move, whether a player is in check, and determines when the game has been won by checkmate. 
 
 ## How To Play
-Ensure Python 3.6 or greater is installed.
-'''shell
+Ensure Python 3.6 or greater is installed.  
+```console
 foo@bar:~$ python3 --version
-'''
+```
 
-Clone this repository.
-'''shell
+Clone this repository.  
+```console
 foo@bar:~$ git clone https://github.com/dakotajunkman/Janggi
-'''
+```
 
-Run main.py.
-'''shell
+Run main.py.  
+```console
 foo@bar:~$ python3 main.py
-'''
+```
 
 ## Piece Overview
 Pieces are represented on the board textually. The first letter is 'r' or 'b' for red or blue, representing the color of the piece. The second letter is the type of piece (see below). The third character is a number for pieces that have more than one instance.
