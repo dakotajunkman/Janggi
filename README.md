@@ -9,17 +9,17 @@ My approach to building this game was to use object oriented programming (OOP). 
 
 ## How To Play
 Ensure Python 3.6 or greater is installed.
-'''console
+'''shell
 foo@bar:~$ python3 --version
 '''
 
 Clone this repository.
-'''console
+'''shell
 foo@bar:~$ git clone https://github.com/dakotajunkman/Janggi
 '''
 
 Run main.py.
-'''console
+'''shell
 foo@bar:~$ python3 main.py
 '''
 
